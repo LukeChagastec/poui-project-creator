@@ -1,0 +1,50 @@
+{
+  "name": "poui-project-creator",
+  "displayName": "PO UI Project Creator",
+  "description": "Cria e configura um novo projeto Angular com PO UI e Protheus.",
+  "version": "0.0.3",
+  "icon": "images/logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Chagastec/poui-project-creator.git"
+  },
+  "license": "MIT",
+  "publisher": "Chagastec",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:poui-project-creator.createProject"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "poui-project-creator.createProject",
+        "title": "PO UI: Criar Novo Projeto Protheus"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.80.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "eslint": "^8.39.0",
+    "glob": "^8.1.0",
+    "mocha": "^11.7.2",
+    "typescript": "^5.0.4"
+  }
+}
