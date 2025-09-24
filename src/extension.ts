@@ -38,15 +38,15 @@ export function activate(context: vscode.ExtensionContext) {
 			}, async (progress) => {
 
 				const steps = [
-					{ command: `npm exec -- ng new ${projectName} --style=css --skip-install --ssr=false`, cwd: parentPath, message: 'Passo 1/10: Criando estrutura com Angular CLI...' },
+					{ command: `ng new ${projectName} --style=css --skip-install --ssr=false`, cwd: parentPath, message: 'Passo 1/10: Criando estrutura com Angular CLI...' },
 					...(isGitRepo ? [] : [{ command: 'git init', cwd: projectPath, message: 'Passo 2/10: Inicializando repositório Git...' }]),
-					{ command: 'npm exec -- ng add @po-ui/ng-components --skip-confirmation --sidemenu', cwd: projectPath, message: 'Passo 3/10: Instalando componentes PO UI...' },
-					{ command: 'npm exec -- ng add @po-ui/ng-templates --skip-confirmation', cwd: projectPath, message: 'Passo 4/10: Instalando templates PO UI...' },
+					{ command: 'ng add @po-ui/ng-components --skip-confirmation --sidemenu', cwd: projectPath, message: 'Passo 3/10: Instalando componentes PO UI...' },
+					{ command: 'ng add @po-ui/ng-templates --skip-confirmation', cwd: projectPath, message: 'Passo 4/10: Instalando templates PO UI...' },
 					{ command: 'npm i @totvs/protheus-lib-core --force', cwd: projectPath, message: 'Passo 5/10: Instalando Protheus Lib Core...' },
 					{ command: 'npm i @totvs/po-theme', cwd: projectPath, message: 'Passo 6/10: Instalando tema Protheus...' },
-					{ command: 'npm exec -- ng generate environments', cwd: projectPath, message: 'Passo 7/10: Gerando environments...' },
-					{ command: 'npm exec -- ng generate module modules/lib-core-dev', cwd: projectPath, message: 'Passo 8/10: Criando módulo de desenvolvimento...' },
-					{ command: 'npm exec -- ng generate service services/lib-core-dev-interceptor', cwd: projectPath, message: 'Passo 9/10: Criando service interceptor...' }
+					{ command: 'ng generate environments', cwd: projectPath, message: 'Passo 7/10: Gerando environments...' },
+					{ command: 'ng generate module modules/lib-core-dev', cwd: projectPath, message: 'Passo 8/10: Criando módulo de desenvolvimento...' },
+					{ command: 'ng generate service services/lib-core-dev-interceptor', cwd: projectPath, message: 'Passo 9/10: Criando service interceptor...' }
 				];
 
 				for (const step of steps) {
@@ -76,14 +76,14 @@ export function activate(context: vscode.ExtensionContext) {
 					await configureAngularJson(projectPath);
 
 					const filesToCreate = {
-						'src/app/app-initializer.ts': await readTemplate(context, 'app-initializer.ts.template'),
-						'src/environments/environment.local.ts': await readTemplate(context, 'env-local.ts.template'),
-						'src/environments/environment.development.ts': await readTemplate(context, 'env-dev.ts.template'),
-						'src/environments/environment.ts': await readTemplate(context, 'env-prod.ts.template'),
-						'src/app/app.config.ts': await readTemplate(context, 'app-config-ts.ts.template'),
-						'src/app/services/lib-core-dev-interceptor.service.ts': await readTemplate(context, 'interceptor.ts.template'),
-						'src/app/app.component.ts': await readTemplate(context, 'app-component-ts.ts.template'),
-						'src/app/modules/lib-core-dev/lib-core-dev.module.ts': await readTemplate(context, 'lib-core-dev-module.ts.template'),
+						'src/app/app-initializer.ts': await readTemplate('app-initializer.ts.template'),
+						'src/environments/environment.local.ts': await readTemplate('env-local.ts.template'),
+						'src/environments/environment.development.ts': await readTemplate('env-dev.ts.template'),
+						'src/environments/environment.ts': await readTemplate('env-prod.ts.template'),
+						'src/app/app.config.ts': await readTemplate('app-config-ts.ts.template'),
+						'src/app/services/lib-core-dev-interceptor.service.ts': await readTemplate('interceptor.ts.template'),
+						'src/app/app.component.ts': await readTemplate('app-component-ts.ts.template'),
+						'src/app/modules/lib-core-dev/lib-core-dev.module.ts': await readTemplate('lib-core-dev-module.ts.template'),
 					};
 
 					for(const [relativePath, content] of Object.entries(filesToCreate)) {
@@ -122,9 +122,9 @@ async function isGitRepository(directory: string): Promise<boolean> {
     }
 }
 
-async function readTemplate(context: vscode.ExtensionContext, templateName: string): Promise<string> {
-    const templatePath = vscode.Uri.joinPath(context.extensionUri, 'src', 'templates', templateName);
-    const templateContent = await vscode.workspace.fs.readFile(templatePath);
+async function readTemplate(templateName: string): Promise<string> {
+    const templatePath = path.join(__dirname, 'templates', templateName);
+    const templateContent = await vscode.workspace.fs.readFile(vscode.Uri.file(templatePath));
     return new TextDecoder('utf-8').decode(templateContent);
 }
 
