@@ -1,0 +1,67 @@
+
+import { Injectable } from '@angular/core';
+import { HttpEvent, HttpHandler, HttpHeaders, HttpRequest, HttpClient } from '@angular/common/http';
+import { Observable, firstValueFrom, from, switchMap } from 'rxjs';
+import { environment } from '../../environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LibCoreDevInterceptorService {
+
+  constructor(private http: HttpClient) { }
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+
+    if (req.url.includes(environment.path.login)) {
+        return next.handle(req);
+    }
+
+    let requestToHandle = req;
+
+    if (!req.url.startsWith('http') && !req.url.startsWith(environment.apiUrl)) {
+        requestToHandle = req.clone({
+            url: environment.apiUrl + req.url
+        });
+    }
+
+    return from(this.montaHeader()).pipe(
+        switchMap(headers => {
+            const requestWithHeaders = requestToHandle.clone({ headers });
+            return next.handle(requestWithHeaders);
+        })
+    );
+  }
+
+  private async obterToken(): Promise<any> {
+    let retorno: any = {};
+
+    if (!environment.production) {
+	  const url = `${environment.apiUrl}${environment.path.login}?grant_type=password&password=${environment.password}&username=${environment.user}`;
+      retorno = await firstValueFrom(this.http.post<any>(url, {}));
+    }
+
+    return retorno;
+  }
+
+  async montaHeader(): Promise<HttpHeaders> {
+    let headersObj: { [key: string]: string };
+    if (!environment.production) {
+      const token = await this.obterToken();
+      headersObj = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        "Accept-Encoding": "gzip, deflate, br",
+        'tenantId': environment.tenantId,
+        'Authorization': 'Bearer ' + token.access_token
+      };
+    } else {
+      headersObj = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        "Accept-Encoding": "gzip, deflate, br"
+      };
+    }
+    return new HttpHeaders(headersObj);
+  }
+}

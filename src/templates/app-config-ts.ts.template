@@ -1,0 +1,39 @@
+
+import { provideRouter } from '@angular/router';
+import { routes } from './app.routes';
+import { ApplicationConfig, importProvidersFrom, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { PoHttpRequestModule, PoI18nConfig, PoI18nModule, PoNotificationModule } from '@po-ui/ng-components';
+import { environment } from '../environments/environment';
+import { LibCoreDevModule } from './modules/lib-core-dev/lib-core-dev.module';
+import { ProtheusLibCoreModule } from '@totvs/protheus-lib-core';
+
+const i18nConfig: PoI18nConfig = {
+  default: {
+    language: 'pt-BR',
+    context: 'general'
+  },
+  contexts: {
+    general: {}
+  }
+};
+
+const protheusLibCore = environment.protheusLibCore === 'dev'
+  ? LibCoreDevModule
+  : ProtheusLibCoreModule;
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes),
+    provideHttpClient(withInterceptorsFromDi()),
+    { provide: "Window", useValue: window },
+    importProvidersFrom([
+      PoHttpRequestModule,
+      PoI18nModule.config(i18nConfig),
+      PoNotificationModule,
+      protheusLibCore
+    ]),
+    [provideAppInitializer(environment.iniApp)],
+    provideZoneChangeDetection({ eventCoalescing: true }),
+  ]
+};

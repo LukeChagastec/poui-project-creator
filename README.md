@@ -1,12 +1,15 @@
 # PO UI Project Creator
 
-![logo](images/logo.png)
-
 This extension for Visual Studio Code helps you create new Angular projects with PO UI and Protheus configurations quickly and easily.
 
 ## Features
 
 *   **PO UI: Criar Novo Projeto Protheus**: This is the main command of the extension. It automates the entire process of creating and configuring a new Angular project with PO UI, ready to be used with Protheus.
+
+## Improvements in v0.0.5
+
+*   **Git Initialization Validation**: The extension now checks if the selected project directory is already under version control. If it is, `git init` will be skipped to prevent unnecessary reinitialization.
+*   **External Templates**: Project templates have been moved to external files in a `templates` folder. This makes the codebase cleaner and simplifies future updates to templates without altering the core extension logic.
 
 ## How to Use
 

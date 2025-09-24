@@ -1,246 +1,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { dirname } from 'path';
+import { TextDecoder } from 'util';
 
-// --- Conteúdo dos Arquivos ---
-// (Certifique-se de que todas as suas constantes de conteúdo do script Python original estejam aqui)
-
-const lib_core_dev_module_content = `
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { LibCoreDevInterceptorService } from '../../services/lib-core-dev-interceptor.service';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-
-@NgModule({
-  providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: LibCoreDevInterceptorService,
-      multi: true,
-    },
-  ],
-  declarations: [],
-  imports: [
-    CommonModule
-  ]
-})
-export class LibCoreDevModule { }
-`;
-
-const app_initializer_content = `
-// src/app/app-initializer.ts
-import { inject } from '@angular/core';
-import { ProAppConfigService } from '@totvs/protheus-lib-core';
-
-// A função agora tem a assinatura correta: () => Promise<any>
-// Ela usa 'inject' para obter o serviço de que precisa.
-export const initializeApp = (): Promise<any> => {
-    const proAppConfigService = inject(ProAppConfigService);
-    return proAppConfigService.loadAppConfig();
-};
-`;
-
-const env_local_content = `
-// src/environments/environment.local.ts
-export const localEnvironment = {
-    user: "admin",
-    password: "1234",
-    tenantId: '99,01'
-};
-`;
-
-const env_dev_content = `
-import { localEnvironment } from "./environment.local";
-
-export const environment = {
-    production: false,
-    apiUrl: 'http://localhost:9000/rest',
-    path: {
-        login: "/api/oauth2/v1/token"
-    },
-    ...localEnvironment,
-    protheusLibCore: 'dev',
-    iniApp: () => {
-    }
-};
-`;
-
-const env_prod_content = `
-import { initializeApp } from "../app/app-initializer";
-
-export const environment = {
-    production: true,
-    apiUrl: '',
-    path: {
-        login: ''
-    },
-    protheusLibCore: 'pro',
-    iniApp: initializeApp
-};
-`;
-
-const app_config_ts_content = `
-import { provideRouter } from '@angular/router';
-import { routes } from './app.routes';
-import { ApplicationConfig, importProvidersFrom, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { PoHttpRequestModule, PoI18nConfig, PoI18nModule, PoNotificationModule } from '@po-ui/ng-components';
-import { environment } from '../environments/environment';
-import { LibCoreDevModule } from './modules/lib-core-dev/lib-core-dev.module';
-import { ProtheusLibCoreModule } from '@totvs/protheus-lib-core';
-
-const i18nConfig: PoI18nConfig = {
-  default: {
-    language: 'pt-BR',
-    context: 'general'
-  },
-  contexts: {
-    general: {}
-  }
-};
-
-const protheusLibCore = environment.protheusLibCore === 'dev'
-  ? LibCoreDevModule
-  : ProtheusLibCoreModule;
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes),
-    provideHttpClient(withInterceptorsFromDi()),
-    { provide: "Window", useValue: window },
-    importProvidersFrom([
-      PoHttpRequestModule,
-      PoI18nModule.config(i18nConfig),
-      PoNotificationModule,
-      protheusLibCore
-    ]),
-    [provideAppInitializer(environment.iniApp)],
-    provideZoneChangeDetection({ eventCoalescing: true }),
-  ]
-};
-`;
-
-const interceptor_content = `
-import { Injectable } from '@angular/core';
-import { HttpEvent, HttpHandler, HttpHeaders, HttpRequest, HttpClient } from '@angular/common/http';
-import { Observable, firstValueFrom, from, switchMap } from 'rxjs';
-import { environment } from '../../environments/environment';
-
-@Injectable({
-  providedIn: 'root'
-})
-export class LibCoreDevInterceptorService {
-
-  constructor(private http: HttpClient) { }
-
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
-    if (req.url.includes(environment.path.login)) {
-        return next.handle(req);
-    }
-
-    let requestToHandle = req;
-
-    if (!req.url.startsWith('http') && !req.url.startsWith(environment.apiUrl)) {
-        requestToHandle = req.clone({
-            url: environment.apiUrl + req.url
-        });
-    }
-
-    return from(this.montaHeader()).pipe(
-        switchMap(headers => {
-            const requestWithHeaders = requestToHandle.clone({ headers });
-            return next.handle(requestWithHeaders);
-        })
-    );
-  }
-
-  private async obterToken(): Promise<any> {
-    let retorno: any = {};
-
-    if (!environment.production) {
-	  const url = \`\${environment.apiUrl}\${environment.path.login}?grant_type=password&password=\${environment.password}&username=\${environment.user}\`;
-      retorno = await firstValueFrom(this.http.post<any>(url, {}));
-    }
-
-    return retorno;
-  }
-
-  async montaHeader(): Promise<HttpHeaders> {
-    let headersObj: { [key: string]: string };
-    if (!environment.production) {
-      const token = await this.obterToken();
-      headersObj = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        "Accept-Encoding": "gzip, deflate, br",
-        'tenantId': environment.tenantId,
-        'Authorization': 'Bearer ' + token.access_token
-      };
-    } else {
-      headersObj = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        "Accept-Encoding": "gzip, deflate, br"
-      };
-    }
-    return new HttpHeaders(headersObj);
-  }
-}
-`;
-
-const app_component_ts_content = `
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
-
-import {
-  PoMenuItem,
-  PoMenuModule,
-  PoPageModule,
-  PoToolbarModule,
-} from '@po-ui/ng-components';
-import { ProAppConfigService } from '@totvs/protheus-lib-core';
-
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    CommonModule,
-    PoToolbarModule,
-    PoMenuModule,
-    PoPageModule,
-    RouterModule
-  ],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-})
-export class AppComponent {
-  readonly menus: Array<PoMenuItem> = [
-    { label: 'Home', action: this.onClick.bind(this) },
-  ];
- 
-  constructor(
-    private proAppConfigService: ProAppConfigService
-  ) {
-    if (!this.proAppConfigService.insideProtheus()) {
-      sessionStorage.setItem("insideProtheus", "0");
-    }
-    else {
-      sessionStorage.setItem("insideProtheus", "1");
-    }
-  }
-
-  private onClick() {
-    alert('Clicked in menu item');
-  }
-}
-`;
-
-
-/**
- * Função de Ativação: Chamada quando a extensão é ativada.
- */
 export function activate(context: vscode.ExtensionContext) {
 
 	let disposable = vscode.commands.registerCommand('poui-project-creator.createProject', async () => {
@@ -266,6 +28,8 @@ export function activate(context: vscode.ExtensionContext) {
 		const projectPath = path.join(parentPath, projectName);
 
 		try {
+			const isGitRepo = await isGitRepository(projectPath);
+
 			// Inicia a automação com uma notificação de progresso
 			await vscode.window.withProgress({
 				location: vscode.ProgressLocation.Notification,
@@ -274,22 +38,23 @@ export function activate(context: vscode.ExtensionContext) {
 			}, async (progress) => {
 
 				const steps = [
-					{ command: `ng new ${projectName} --directory=${projectName} --style=css --skip-install --ssr=false`, cwd: parentPath, message: 'Passo 1/10: Criando estrutura com Angular CLI...' },
-					{ command: 'ng add @po-ui/ng-components --skip-confirmation --sidemenu', cwd: projectPath, message: 'Passo 2/10: Instalando componentes PO UI...' },
-					{ command: 'ng add @po-ui/ng-templates --skip-confirmation', cwd: projectPath, message: 'Passo 3/10: Instalando templates PO UI...' },
-					{ command: 'npm i @totvs/protheus-lib-core --force', cwd: projectPath, message: 'Passo 4/10: Instalando Protheus Lib Core...' },
-					{ command: 'npm i @totvs/po-theme', cwd: projectPath, message: 'Passo 5/10: Instalando tema Protheus...' },
-					{ command: 'ng generate environments', cwd: projectPath, message: 'Passo 6/10: Gerando environments...' },
-					{ command: 'ng generate module modules/lib-core-dev', cwd: projectPath, message: 'Passo 7/10: Criando módulo de desenvolvimento...' },
-					{ command: 'ng generate service services/lib-core-dev-interceptor', cwd: projectPath, message: 'Passo 8/10: Criando service interceptor...' }
+					{ command: `npm exec -- ng new ${projectName} --style=css --skip-install --ssr=false`, cwd: parentPath, message: 'Passo 1/10: Criando estrutura com Angular CLI...' },
+					...(isGitRepo ? [] : [{ command: 'git init', cwd: projectPath, message: 'Passo 2/10: Inicializando repositório Git...' }]),
+					{ command: 'npm exec -- ng add @po-ui/ng-components --skip-confirmation --sidemenu', cwd: projectPath, message: 'Passo 3/10: Instalando componentes PO UI...' },
+					{ command: 'npm exec -- ng add @po-ui/ng-templates --skip-confirmation', cwd: projectPath, message: 'Passo 4/10: Instalando templates PO UI...' },
+					{ command: 'npm i @totvs/protheus-lib-core --force', cwd: projectPath, message: 'Passo 5/10: Instalando Protheus Lib Core...' },
+					{ command: 'npm i @totvs/po-theme', cwd: projectPath, message: 'Passo 6/10: Instalando tema Protheus...' },
+					{ command: 'npm exec -- ng generate environments', cwd: projectPath, message: 'Passo 7/10: Gerando environments...' },
+					{ command: 'npm exec -- ng generate module modules/lib-core-dev', cwd: projectPath, message: 'Passo 8/10: Criando módulo de desenvolvimento...' },
+					{ command: 'npm exec -- ng generate service services/lib-core-dev-interceptor', cwd: projectPath, message: 'Passo 9/10: Criando service interceptor...' }
 				];
 
 				for (const step of steps) {
 					progress.report({ message: step.message });
-					await runCommandInTerminal(step.message, step.command, step.cwd);
+					await executeShellCommand(step.command, step.cwd, step.message);
 				}
 
-				progress.report({ message: 'Passo 9/10: Configurando arquivos do projeto...' });
+				progress.report({ message: 'Passo 10/10: Configurando arquivos do projeto...' });
 
 				const assetsPath = path.join(projectPath, 'src', 'assets');
 				await vscode.workspace.fs.createDirectory(vscode.Uri.file(path.join(assetsPath, 'data')));
@@ -297,7 +62,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 				const faviconSourceUri = vscode.Uri.file(path.join(projectPath, 'src', 'favicon.ico'));
 				const faviconDestUri = vscode.Uri.file(path.join(assetsPath, 'images', 'favicon.ico'));
-				await vscode.workspace.fs.rename(faviconSourceUri, faviconDestUri, { overwrite: true });
+				try {
+					await vscode.workspace.fs.stat(faviconSourceUri); // Check if source favicon exists
+					await vscode.workspace.fs.rename(faviconSourceUri, faviconDestUri, { overwrite: true });
+				} catch (e) {
+					console.warn(`Favicon not found at ${faviconSourceUri.fsPath}. Skipping rename.`);
+				}
 
 				const appConfigContent = JSON.stringify({
 					name: projectName, version: "1.0.0", api_baseUrl: "/", "productLine": "Protheus" }, null, 4);
@@ -306,22 +76,22 @@ export function activate(context: vscode.ExtensionContext) {
 					await configureAngularJson(projectPath);
 
 					const filesToCreate = {
-						'src/app/app-initializer.ts': app_initializer_content,
-						'src/environments/environment.local.ts': env_local_content,
-						'src/environments/environment.development.ts': env_dev_content,
-						'src/environments/environment.ts': env_prod_content,
-						'src/app/app.config.ts': app_config_ts_content,
-						'src/app/services/lib-core-dev-interceptor.service.ts': interceptor_content,
-						'src/app/app.component.ts': app_component_ts_content,
-						'src/app/modules/lib-core-dev/lib-core-dev.module.ts': lib_core_dev_module_content,
+						'src/app/app-initializer.ts': await readTemplate(context, 'app-initializer.ts.template'),
+						'src/environments/environment.local.ts': await readTemplate(context, 'env-local.ts.template'),
+						'src/environments/environment.development.ts': await readTemplate(context, 'env-dev.ts.template'),
+						'src/environments/environment.ts': await readTemplate(context, 'env-prod.ts.template'),
+						'src/app/app.config.ts': await readTemplate(context, 'app-config-ts.ts.template'),
+						'src/app/services/lib-core-dev-interceptor.service.ts': await readTemplate(context, 'interceptor.ts.template'),
+						'src/app/app.component.ts': await readTemplate(context, 'app-component-ts.ts.template'),
+						'src/app/modules/lib-core-dev/lib-core-dev.module.ts': await readTemplate(context, 'lib-core-dev-module.ts.template'),
 					};
 
 					for(const [relativePath, content] of Object.entries(filesToCreate)) {
 						await writeFile(path.join(projectPath, relativePath), content);
 			}
 
-				progress.report({ message: 'Passo 10/10: Instalando todas as dependências (npm install)...' });
-			await runCommandInTerminal('NPM Install', 'npm install', projectPath);
+				progress.report({ message: 'Passo 10/10: Instalando todas as dependências (npm install)...', increment: 100 });
+				await executeShellCommand('npm install', projectPath, 'NPM Install');
 		});
 
 	vscode.window.showInformationMessage(`Projeto '${projectName}' criado com sucesso!`);
@@ -338,28 +108,54 @@ export function activate(context: vscode.ExtensionContext) {
 }
 	});
 
-context.subscriptions.push(disposable);
+	context.subscriptions.push(disposable);
 }
 
-// --- Funções de Ajuda ---
 
-async function runCommandInTerminal(terminalName: string, command: string, cwd: string): Promise<void> {
-	return new Promise((resolve, reject) => {
-		const terminal = vscode.window.createTerminal({ name: terminalName, cwd: cwd });
-		terminal.sendText(command);
-		terminal.sendText('exit $?');
+async function isGitRepository(directory: string): Promise<boolean> {
+    try {
+        const gitDir = vscode.Uri.file(path.join(directory, '.git'));
+        await vscode.workspace.fs.stat(gitDir);
+        return true;
+    } catch {
+        return false;
+    }
+}
 
-		const disposable = vscode.window.onDidCloseTerminal(t => {
-			if (t === terminal) {
-				disposable.dispose();
-				if (t.exitStatus && t.exitStatus.code !== 0) {
-					reject(`O comando '${command}' falhou. Verifique o terminal '${terminalName}' para detalhes.`);
-				} else {
-					resolve();
-				}
-			}
-		});
-	});
+async function readTemplate(context: vscode.ExtensionContext, templateName: string): Promise<string> {
+    const templatePath = vscode.Uri.joinPath(context.extensionUri, 'src', 'templates', templateName);
+    const templateContent = await vscode.workspace.fs.readFile(templatePath);
+    return new TextDecoder('utf-8').decode(templateContent);
+}
+
+async function executeShellCommand(command: string, cwd: string, message: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        const task = new vscode.Task(
+            { type: 'shell', group: vscode.TaskGroup.Build },
+            vscode.TaskScope.Workspace,
+            message,
+            'PO UI Project Creator',
+            new vscode.ShellExecution(command, { cwd: cwd })
+        );
+        task.presentationOptions = {
+            reveal: vscode.TaskRevealKind.Always,
+            showReuseMessage: false,
+            clear: true
+        };
+
+        const disposable = vscode.tasks.onDidEndTaskProcess(e => {
+            if (e.execution.task === task) {
+                disposable.dispose();
+                if (e.exitCode === 0) {
+                    resolve();
+                } else {
+                    reject(`O comando '${command}' falhou com código de saída ${e.exitCode}.`);
+                }
+            }
+        });
+
+        vscode.tasks.executeTask(task);
+    });
 }
 
 async function writeFile(filePath: string, content: string): Promise<void> {

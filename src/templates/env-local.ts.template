@@ -1,0 +1,7 @@
+
+// src/environments/environment.local.ts
+export const localEnvironment = {
+    user: "admin",
+    password: "1234",
+    tenantId: '99,01'
+};

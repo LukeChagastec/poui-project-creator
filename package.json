@@ -2,7 +2,7 @@
   "name": "poui-project-creator",
   "displayName": "PO UI Project Creator",
   "description": "Cria e configura um novo projeto Angular com PO UI e Protheus.",
-  "version": "0.0.3",
+  "version": "0.0.7",
   "icon": "images/logo.png",
   "repository": {
     "type": "git",
@@ -33,17 +33,20 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts"
+    "lint": "eslint src",
+    "test": "node node_modules/@vscode/test-cli/out/bin.mjs"
   },
   "devDependencies": {
-    "@types/glob": "^8.1.0",
+    
     "@types/mocha": "^10.0.10",
     "@types/node": "18.x",
     "@types/vscode": "^1.80.0",
     "@typescript-eslint/eslint-plugin": "^5.59.1",
     "@typescript-eslint/parser": "^5.59.1",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
     "eslint": "^8.39.0",
-    "glob": "^8.1.0",
+    "glob": "^11.0.3",
     "mocha": "^11.7.2",
     "typescript": "^5.0.4"
   }

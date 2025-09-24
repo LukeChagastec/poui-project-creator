@@ -1,0 +1,11 @@
+
+// src/app/app-initializer.ts
+import { inject } from '@angular/core';
+import { ProAppConfigService } from '@totvs/protheus-lib-core';
+
+// A função agora tem a assinatura correta: () => Promise<any>
+// Ela usa 'inject' para obter o serviço de que precisa.
+export const initializeApp = (): Promise<any> => {
+    const proAppConfigService = inject(ProAppConfigService);
+    return proAppConfigService.loadAppConfig();
+};

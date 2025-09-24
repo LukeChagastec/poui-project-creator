@@ -1,0 +1,12 @@
+
+import { initializeApp } from "../app/app-initializer";
+
+export const environment = {
+    production: true,
+    apiUrl: '',
+    path: {
+        login: ''
+    },
+    protheusLibCore: 'pro',
+    iniApp: initializeApp
+};

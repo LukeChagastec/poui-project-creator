@@ -1,0 +1,14 @@
+
+import { localEnvironment } from "./environment.local";
+
+export const environment = {
+    production: false,
+    apiUrl: 'http://localhost:9000/rest',
+    path: {
+        login: "/api/oauth2/v1/token"
+    },
+    ...localEnvironment,
+    protheusLibCore: 'dev',
+    iniApp: () => {
+    }
+};
