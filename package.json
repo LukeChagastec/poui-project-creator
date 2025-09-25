@@ -2,14 +2,31 @@
   "name": "poui-project-creator",
   "displayName": "PO UI Project Creator",
   "description": "Cria e configura um novo projeto Angular com PO UI e Protheus.",
-  "version": "0.0.9",
+  "version": "0.0.13",
   "icon": "images/logo.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/Chagastec/poui-project-creator.git"
   },
-  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Chagastec/poui-project-creator/issues"
+  },
+  "galleryBanner": {
+    "color": "#2c2c32",
+    "theme": "dark"
+  },
   "publisher": "Chagastec",
+  "license": "MIT",
+  "keywords": [
+    "PO UI",
+    "Protheus",
+    "TOTVS",
+    "Angular",
+    "scaffolding",
+    "generator",
+    "boilerplate",
+    "templates"
+  ],
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -20,6 +37,14 @@
     "onCommand:poui-project-creator.createProject"
   ],
   "main": "./out/extension.js",
+  "files": [
+    "out",
+    "src/templates",
+    "images",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
+  ],
   "contributes": {
     "commands": [
       {

@@ -70,42 +70,60 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 
 				const appConfigContent = JSON.stringify({
-					name: projectName, version: "1.0.0", api_baseUrl: "/", "productLine": "Protheus" }, null, 4);
+					name: projectName, version: "1.0.0", api_baseUrl: "/", "productLine": "Protheus"
+				}, null, 4);
 				await writeFile(path.join(assetsPath, 'data', 'appConfig.json'), appConfigContent);
 
-					await configureAngularJson(projectPath);
+				await configureAngularJson(projectPath);
 
-					const filesToCreate = {
-						'src/app/app-initializer.ts': await readTemplate('app-initializer.ts.template'),
-						'src/environments/environment.local.ts': await readTemplate('env-local.ts.template'),
-						'src/environments/environment.development.ts': await readTemplate('env-dev.ts.template'),
-						'src/environments/environment.ts': await readTemplate('env-prod.ts.template'),
-						'src/app/app.config.ts': await readTemplate('app-config-ts.ts.template'),
-						'src/app/services/lib-core-dev-interceptor.service.ts': await readTemplate('interceptor.ts.template'),
-						'src/app/app.component.ts': await readTemplate('app-component-ts.ts.template'),
-						'src/app/modules/lib-core-dev/lib-core-dev.module.ts': await readTemplate('lib-core-dev-module.ts.template'),
-					};
+				const templateMap = {
+					'src/app/app-initializer.ts': 'app-initializer.ts.template',
+					'src/environments/environment.local.ts': 'env-local.ts.template',
+					'src/environments/environment.development.ts': 'env-dev.ts.template',
+					'src/environments/environment.ts': 'env-prod.ts.template',
+					'src/app/app.config.ts': 'app-config-ts.ts.template',
+					'src/app/services/lib-core-dev-interceptor.service.ts': 'interceptor.ts.template',
+					'src/app/app.component.ts': 'app-component-ts.ts.template',
+					'src/app/modules/lib-core-dev/lib-core-dev.module.ts': 'lib-core-dev-module.ts.template',
+				};
 
-					for(const [relativePath, content] of Object.entries(filesToCreate)) {
-						await writeFile(path.join(projectPath, relativePath), content);
-			}
+				// 2. Crie um array de promessas, onde cada uma lê um arquivo de template
+				const readPromises = Object.values(templateMap).map(templateName => {
+					const templatePath = path.join(context.extensionPath, 'src', 'templates', templateName);
+					// Supondo que 'readTemplate' retorne a string do conteúdo do arquivo
+					return readTemplate(templatePath);
+				});
+
+				// 3. Aguarde todas as leituras de arquivo terminarem
+				const contents = await Promise.all(readPromises);
+
+				// 4. Crie o objeto 'filesToCreate' combinando os caminhos de destino com o conteúdo lido
+				const filesToCreate = Object.keys(templateMap).reduce((acc, key, index) => {
+					acc[key] = contents[index];
+					return acc;
+				}, {} as { [key: string]: string });
+
+				// Agora você pode usar o objeto 'filesToCreate' para escrever os arquivos
+				for (const [relativePath, content] of Object.entries(filesToCreate)) {
+					await writeFile(path.join(projectPath, relativePath), content);
+				}
 
 				progress.report({ message: 'Passo 10/10: Instalando todas as dependências (npm install)...', increment: 100 });
 				await executeShellCommand('npm install', projectPath, 'NPM Install');
-		});
+			});
 
-	vscode.window.showInformationMessage(`Projeto '${projectName}' criado com sucesso!`);
-	const openInNewWindow = 'Abrir em Nova Janela';
-	vscode.window.showInformationMessage(`Deseja abrir o novo projeto?`, openInNewWindow).then(selection => {
-		if (selection === openInNewWindow) {
-			vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(projectPath), { forceNewWindow: true });
+			vscode.window.showInformationMessage(`Projeto '${projectName}' criado com sucesso!`);
+			const openInNewWindow = 'Abrir em Nova Janela';
+			vscode.window.showInformationMessage(`Deseja abrir o novo projeto?`, openInNewWindow).then(selection => {
+				if (selection === openInNewWindow) {
+					vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(projectPath), { forceNewWindow: true });
+				}
+			});
+
+		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : String(error);
+			vscode.window.showErrorMessage(`Ocorreu um erro durante a criação do projeto: ${errorMessage}`);
 		}
-	});
-
-} catch (error) {
-	const errorMessage = error instanceof Error ? error.message : String(error);
-	vscode.window.showErrorMessage(`Ocorreu um erro durante a criação do projeto: ${errorMessage}`);
-}
 	});
 
 	context.subscriptions.push(disposable);
@@ -113,49 +131,50 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 async function isGitRepository(directory: string): Promise<boolean> {
-    try {
-        const gitDir = vscode.Uri.file(path.join(directory, '.git'));
-        await vscode.workspace.fs.stat(gitDir);
-        return true;
-    } catch {
-        return false;
-    }
+	try {
+		const gitDir = vscode.Uri.file(path.join(directory, '.git'));
+		await vscode.workspace.fs.stat(gitDir);
+		return true;
+	} catch {
+		return false;
+	}
 }
 
-async function readTemplate(templateName: string): Promise<string> {
-    const templatePath = path.join(__dirname, 'templates', templateName);
-    const templateContent = await vscode.workspace.fs.readFile(vscode.Uri.file(templatePath));
-    return new TextDecoder('utf-8').decode(templateContent);
+async function readTemplate(absolutePath: string): Promise<string> {
+	const decoder = new TextDecoder('utf-8');
+	const fileUri = vscode.Uri.file(absolutePath);
+	const contentBytes = await vscode.workspace.fs.readFile(fileUri);
+	return decoder.decode(contentBytes);
 }
 
 async function executeShellCommand(command: string, cwd: string, message: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-        const task = new vscode.Task(
-            { type: 'shell', group: vscode.TaskGroup.Build },
-            vscode.TaskScope.Workspace,
-            message,
-            'PO UI Project Creator',
-            new vscode.ShellExecution(command, { cwd: cwd })
-        );
-        task.presentationOptions = {
-            reveal: vscode.TaskRevealKind.Always,
-            showReuseMessage: false,
-            clear: true
-        };
+	return new Promise((resolve, reject) => {
+		const task = new vscode.Task(
+			{ type: 'shell', group: vscode.TaskGroup.Build },
+			vscode.TaskScope.Workspace,
+			message,
+			'PO UI Project Creator',
+			new vscode.ShellExecution(command, { cwd: cwd })
+		);
+		task.presentationOptions = {
+			reveal: vscode.TaskRevealKind.Always,
+			showReuseMessage: false,
+			clear: false
+		};
 
-        const disposable = vscode.tasks.onDidEndTaskProcess(e => {
-            if (e.execution.task === task) {
-                disposable.dispose();
-                if (e.exitCode === 0) {
-                    resolve();
-                } else {
-                    reject(`O comando '${command}' falhou com código de saída ${e.exitCode}.`);
-                }
-            }
-        });
+		const disposable = vscode.tasks.onDidEndTaskProcess(e => {
+			if (e.execution.task === task) {
+				disposable.dispose();
+				if (e.exitCode === 0) {
+					resolve();
+				} else {
+					reject(`O comando '${command}' falhou com código de saída ${e.exitCode}.`);
+				}
+			}
+		});
 
-        vscode.tasks.executeTask(task);
-    });
+		vscode.tasks.executeTask(task);
+	});
 }
 
 async function writeFile(filePath: string, content: string): Promise<void> {

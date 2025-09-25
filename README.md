@@ -1,45 +1,49 @@
 # PO UI Project Creator
 
-This extension for Visual Studio Code helps you create new Angular projects with PO UI and Protheus configurations quickly and easily.
+![Versão](https://img.shields.io/badge/version-0.0.13-blue)
+![Licença](https://img.shields.io/badge/license-MIT-green)
+![Plataforma](https://img.shields.io/badge/platform-VSCode-blueviolet)
 
-## Features
+Uma extensão para o Visual Studio Code que automatiza a criação de novos projetos **Angular** com **PO UI**, pré-configurados para o ecossistema **Protheus**.
 
-*   **PO UI: Criar Novo Projeto Protheus**: This is the main command of the extension. It automates the entire process of creating and configuring a new Angular project with PO UI, ready to be used with Protheus.
+## Funcionalidades Principais ✨
 
-## Improvements in v0.0.5
+* **Criação com um Comando:** Gere um projeto completo e configurado a partir de um único comando na paleta do VS Code.
+* **Integração Protheus:** Instala e configura automaticamente as dependências essenciais como `@totvs/protheus-lib-core` e `@totvs/po-theme`.
+* **Estrutura Organizada:** Move os templates para arquivos externos, mantendo o código da extensão limpo e facilitando futuras atualizações.
+* **Inicialização Inteligente de Git:** A extensão verifica se a pasta de destino já é um repositório Git. O comando `git init` só é executado se necessário, evitando reinicializações acidentais.
+* **Fluxo de Trabalho Amigável:** Acompanhe todo o processo através de notificações de progresso e, ao final, abra o novo projeto em uma nova janela com apenas um clique.
 
-*   **Git Initialization Validation**: The extension now checks if the selected project directory is already under version control. If it is, `git init` will be skipped to prevent unnecessary reinitialization.
-*   **External Templates**: Project templates have been moved to external files in a `templates` folder. This makes the codebase cleaner and simplifies future updates to templates without altering the core extension logic.
+## Como Usar
 
-## How to Use
+1.  Abra a Paleta de Comandos (`Ctrl+Shift+P` ou `Cmd+Shift+P` no macOS).
+2.  Digite `PO UI: Criar Novo Projeto Protheus` e pressione `Enter`.
+3.  Informe o nome do seu novo projeto.
+4.  Selecione a pasta onde o projeto será criado.
+5.  A extensão cuidará de todo o resto!
 
-1.  Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on macOS).
-2.  Type `PO UI: Criar Novo Projeto Protheus` and press `Enter`.
-3.  Follow the prompts to enter the project name and select the parent directory where the project will be created.
-4.  The extension will take care of the rest, and you will see the progress in the notifications.
+## O Que a Extensão Faz? ⚙️
 
-## What it Does
+O comando automatiza os seguintes passos para você:
 
-The extension performs the following steps:
+1.  Cria um novo projeto Angular com o Angular CLI.
+2.  Inicializa um repositório **Git** (se ainda não existir).
+3.  Adiciona os componentes do **PO UI** (`@po-ui/ng-components`).
+4.  Adiciona os templates do **PO UI** (`@po-ui/ng-templates`).
+5.  Instala a **Protheus Lib Core** (`@totvs/protheus-lib-core`).
+6.  Instala o **tema do Protheus** (`@totvs/po-theme`).
+7.  Configura o `angular.json` com os estilos e assets necessários, incluindo o `favicon.ico`.
+8.  Cria arquivos essenciais para a integração, como `appConfig.json`, interceptors de desenvolvimento e módulos.
+9.  Instala todas as dependências do projeto com `npm install`.
+10. Ao final, **oferece para abrir o projeto recém-criado** em uma nova janela do VS Code.
 
-1.  Creates a new Angular project using the Angular CLI.
-2.  Adds the PO UI components (`@po-ui/ng-components`).
-3.  Adds the PO UI templates (`@po-ui/ng-templates`).
-4.  Installs the Protheus Lib Core (`@totvs/protheus-lib-core`).
-5.  Installs the Protheus theme (`@totvs/po-theme`).
-6.  Generates the environment files.
-7.  Creates a development module and an interceptor service for Protheus integration.
-8.  Configures the `angular.json` file with the necessary styles and assets.
-9.  Creates and configures several files in your project, including `app.config.ts`, `app.component.ts`, and environment files.
-10. Installs all the project dependencies using `npm install`.
+## Pré-requisitos
 
-## Requirements
+Antes de usar a extensão, garanta que você tenha as seguintes ferramentas instaladas:
 
-Before using this extension, make sure you have the following tools installed on your system:
+* [Node.js](https://nodejs.org/) (que inclui o `npm`)
+* [Angular CLI](https://angular.io/cli) (`npm install -g @angular/cli`)
 
-*   [Node.js](https://nodejs.org/) (which includes `npm`)
-*   [Angular CLI](https://angular.io/cli)
+## Licença
 
----
-
-**Enjoy!**
+Este projeto é distribuído sob a licença **MIT**. Veja o arquivo `LICENSE` para mais detalhes.
