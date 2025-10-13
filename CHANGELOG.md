@@ -4,6 +4,11 @@ Todas as mudanças notáveis para a extensão "poui-project-creator" serão docu
 
 Consulte [Mantenha um Changelog](http://keepachangelog.com/) para recomendações sobre como estruturar este arquivo.
 
+## [0.0.15] - 2025-10-13
+
+### Corrigido
+- Versão dentro do README.MD.
+
 ## [0.0.14] - 2025-10-13
 
 ### Corrigido
