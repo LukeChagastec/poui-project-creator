@@ -38,11 +38,11 @@ export function activate(context: vscode.ExtensionContext) {
 			}, async (progress) => {
 
 				const steps = [
-					{ command: `ng new ${projectName} --style=css --skip-install --ssr=false`, cwd: parentPath, message: 'Passo 1/10: Criando estrutura com Angular CLI...' },
+					{ command: `npx -p @angular/cli@19 ng new ${projectName} --style=css --skip-install`, cwd: parentPath, message: 'Passo 1/10: Criando estrutura com Angular CLI v19...' },
 					...(isGitRepo ? [] : [{ command: 'git init', cwd: projectPath, message: 'Passo 2/10: Inicializando repositório Git...' }]),
-					{ command: 'ng add @po-ui/ng-components --skip-confirmation --sidemenu', cwd: projectPath, message: 'Passo 3/10: Instalando componentes PO UI...' },
-					{ command: 'ng add @po-ui/ng-templates --skip-confirmation', cwd: projectPath, message: 'Passo 4/10: Instalando templates PO UI...' },
-					{ command: 'npm i @totvs/protheus-lib-core --force', cwd: projectPath, message: 'Passo 5/10: Instalando Protheus Lib Core...' },
+					{ command: 'ng add @po-ui/ng-components@19 --skip-confirmation --sidemenu', cwd: projectPath, message: 'Passo 3/10: Instalando componentes PO UI v19...' },
+					{ command: 'ng add @po-ui/ng-templates@19 --skip-confirmation', cwd: projectPath, message: 'Passo 4/10: Instalando templates PO UI v19...' },
+					{ command: 'npm i @totvs/protheus-lib-core', cwd: projectPath, message: 'Passo 5/10: Instalando Protheus Lib Core...' },
 					{ command: 'npm i @totvs/po-theme', cwd: projectPath, message: 'Passo 6/10: Instalando tema Protheus...' },
 					{ command: 'ng generate environments', cwd: projectPath, message: 'Passo 7/10: Gerando environments...' },
 					{ command: 'ng generate module modules/lib-core-dev', cwd: projectPath, message: 'Passo 8/10: Criando módulo de desenvolvimento...' },

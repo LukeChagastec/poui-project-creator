@@ -1,9 +1,17 @@
-# Change Log
+# Histórico de Alterações
 
-All notable changes to the "poui-project-creator" extension will be documented in this file.
+Todas as mudanças notáveis para a extensão "poui-project-creator" serão documentadas neste arquivo.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+Consulte [Mantenha um Changelog](http://keepachangelog.com/) para recomendações sobre como estruturar este arquivo.
 
-## [Unreleased]
+## [0.0.14] - 2025-10-13
 
-- Initial release
+### Corrigido
+- Resolvido um conflito crítico de dependência que ocorria durante a criação do projeto. A extensão agora garante a consistência da versão, criando projetos com Angular 19 e seu ecossistema compatível:
+  - O comando `ng new` agora usa `npx` para executar o `@angular/cli@19`, garantindo uma base estável do Angular 19.
+  - Os pacotes `@po-ui/ng-components` e `@po-ui/ng-templates` agora são instalados com a versão `19` para manter a compatibilidade.
+  - A flag `--force` foi removida da instalação do `@totvs/protheus-lib-core`, pois as dependências alinhadas evitam erros de dependência de pares (peer dependency).
+
+## [0.0.1] - 2025-10-13
+### Adicionado
+- Lançamento inicial
