@@ -42,8 +42,8 @@ export function activate(context: vscode.ExtensionContext) {
 					...(isGitRepo ? [] : [{ command: 'git init', cwd: projectPath, message: 'Passo 2/10: Inicializando repositório Git...' }]),
 					{ command: 'ng add @po-ui/ng-components@19 --skip-confirmation --sidemenu', cwd: projectPath, message: 'Passo 3/10: Instalando componentes PO UI v19...' },
 					{ command: 'ng add @po-ui/ng-templates@19 --skip-confirmation', cwd: projectPath, message: 'Passo 4/10: Instalando templates PO UI v19...' },
-					{ command: 'npm i @totvs/protheus-lib-core', cwd: projectPath, message: 'Passo 5/10: Instalando Protheus Lib Core...' },
-					{ command: 'npm i @totvs/po-theme', cwd: projectPath, message: 'Passo 6/10: Instalando tema Protheus...' },
+					{ command: 'npm i @totvs/protheus-lib-core@19', cwd: projectPath, message: 'Passo 5/10: Instalando Protheus Lib Core...' },
+					{ command: 'npm i @totvs/po-theme@19', cwd: projectPath, message: 'Passo 6/10: Instalando tema Protheus...' },
 					{ command: 'ng generate environments', cwd: projectPath, message: 'Passo 7/10: Gerando environments...' },
 					{ command: 'ng generate module modules/lib-core-dev', cwd: projectPath, message: 'Passo 8/10: Criando módulo de desenvolvimento...' },
 					{ command: 'ng generate service services/lib-core-dev-interceptor', cwd: projectPath, message: 'Passo 9/10: Criando service interceptor...' }

@@ -1,6 +1,6 @@
 # PO UI Project Creator
 
-![Versão](https://img.shields.io/badge/version-0.0.15-blue)
+![Versão](https://img.shields.io/badge/version-0.0.16-red)
 ![Licença](https://img.shields.io/badge/license-MIT-green)
 ![Plataforma](https://img.shields.io/badge/platform-VSCode-blueviolet)
 
