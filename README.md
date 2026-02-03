@@ -47,3 +47,7 @@ Antes de usar a extensão, garanta que você tenha as seguintes ferramentas inst
 ## Licença
 
 Este projeto é distribuído sob a licença **MIT**. Veja o arquivo `LICENSE` para mais detalhes.
+
+## 📜 Histórico de Mudanças
+
+- [2026-02-03 10:55] **feat(core)**: atualiza o projeto para Angular 21 ([Ver Detalhes](./docs/changelogs/2026-02-03_1054-feat-core.md))
