@@ -2,7 +2,7 @@
   "name": "poui-project-creator",
   "displayName": "PO UI Project Creator",
   "description": "Cria e configura um novo projeto Angular com PO UI e Protheus.",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "icon": "images/logo.png",
   "repository": {
     "type": "git",
