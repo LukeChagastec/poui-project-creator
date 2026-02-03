@@ -38,12 +38,12 @@ export function activate(context: vscode.ExtensionContext) {
 			}, async (progress) => {
 
 				const steps = [
-					{ command: `npx -p @angular/cli@19 ng new ${projectName} --style=css --skip-install`, cwd: parentPath, message: 'Passo 1/10: Criando estrutura com Angular CLI v19...' },
+					{ command: `npx -p @angular/cli@21 ng new ${projectName} --style=css --skip-install`, cwd: parentPath, message: 'Passo 1/10: Criando estrutura com Angular CLI v21...' },
 					...(isGitRepo ? [] : [{ command: 'git init', cwd: projectPath, message: 'Passo 2/10: Inicializando repositório Git...' }]),
-					{ command: 'ng add @po-ui/ng-components@19 --skip-confirmation --sidemenu', cwd: projectPath, message: 'Passo 3/10: Instalando componentes PO UI v19...' },
-					{ command: 'ng add @po-ui/ng-templates@19 --skip-confirmation', cwd: projectPath, message: 'Passo 4/10: Instalando templates PO UI v19...' },
-					{ command: 'npm i @totvs/protheus-lib-core@19', cwd: projectPath, message: 'Passo 5/10: Instalando Protheus Lib Core...' },
-					{ command: 'npm i @totvs/po-theme@19', cwd: projectPath, message: 'Passo 6/10: Instalando tema Protheus...' },
+					{ command: 'ng add @po-ui/ng-components --skip-confirmation --sidemenu', cwd: projectPath, message: 'Passo 3/10: Instalando componentes PO UI...' },
+					{ command: 'ng add @po-ui/ng-templates --skip-confirmation', cwd: projectPath, message: 'Passo 4/10: Instalando templates PO UI...' },
+					{ command: 'npm i @totvs/protheus-lib-core --legacy-peer-deps', cwd: projectPath, message: 'Passo 5/10: Instalando Protheus Lib Core...' },
+					{ command: 'npm i @totvs/po-theme --legacy-peer-deps', cwd: projectPath, message: 'Passo 6/10: Instalando tema Protheus...' },
 					{ command: 'ng generate environments', cwd: projectPath, message: 'Passo 7/10: Gerando environments...' },
 					{ command: 'ng generate module modules/lib-core-dev', cwd: projectPath, message: 'Passo 8/10: Criando módulo de desenvolvimento...' },
 					{ command: 'ng generate service services/lib-core-dev-interceptor', cwd: projectPath, message: 'Passo 9/10: Criando service interceptor...' }
@@ -75,6 +75,7 @@ export function activate(context: vscode.ExtensionContext) {
 				await writeFile(path.join(assetsPath, 'data', 'appConfig.json'), appConfigContent);
 
 				await configureAngularJson(projectPath);
+				await configurePackageJson(projectPath);
 
 				const templateMap = {
 					'src/app/app-initializer.ts': 'app-initializer.ts.template',
@@ -109,7 +110,7 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 
 				progress.report({ message: 'Passo 10/10: Instalando todas as dependências (npm install)...', increment: 100 });
-				await executeShellCommand('npm install', projectPath, 'NPM Install');
+				await executeShellCommand('npm install --force', projectPath, 'NPM Install');
 			});
 
 			vscode.window.showInformationMessage(`Projeto '${projectName}' criado com sucesso!`);
@@ -191,6 +192,60 @@ async function writeFile(filePath: string, content: string): Promise<void> {
 	}
 }
 
+async function configurePackageJson(projectPath: string): Promise<void> {
+	const decoder = new TextDecoder('utf-8');
+	const encoder = new TextEncoder();
+	const packageJsonUri = vscode.Uri.file(path.join(projectPath, 'package.json'));
+
+	try {
+		const original = await vscode.workspace.fs.readFile(packageJsonUri);
+		const packageJson = JSON.parse(decoder.decode(original));
+
+		const dependencias = packageJson.dependencies;
+		dependencias["@angular/animations"] = "~21.0.3";
+		dependencias["@angular/common"] = "~21.0.3";
+		dependencias["@angular/compiler"] = "~21.0.3";
+		dependencias["@angular/core"] = "~21.0.3";
+		dependencias["@angular/forms"] = "~21.0.3";
+		dependencias["@angular/platform-browser"] = "~21.0.3";
+		dependencias["@angular/platform-browser-dynamic"] = "~21.0.3";
+		dependencias["@angular/router"] = "~21.0.3";
+		dependencias["@po-ui/ng-components"] = "^21.0.1";
+		dependencias["@po-ui/ng-templates"] = "21.0.1";
+		dependencias["@totvs/po-theme"] = "^21.0.1";
+		dependencias["@totvs/protheus-lib-core"] = "^19.0.3";
+		dependencias["rxjs"] = "~7.8.0";
+		dependencias["tslib"] = "^2.3.0";
+
+		const devDependencias = packageJson.devDependencies;
+		devDependencias["@angular-devkit/build-angular"] = "~21.0.3";
+		devDependencias["@angular-devkit/schematics"] = "~21.0.0";
+		devDependencias["@angular/cli"] = "~21.0.3";
+		devDependencias["@angular/compiler-cli"] = "~21.0.0";
+		devDependencias["@po-ui/ng-templates"] = "^21.0.1";
+		devDependencias["jsdom"] = "^27.1.0";
+		devDependencias["typescript"] = "~5.9.3";
+		devDependencias["vitest"] = "^4.0.8";
+		
+		packageJson["overrides"] = {
+			"@angular/animations": "$@angular/animations",
+			"@angular/common": "$@angular/common",
+			"@angular/compiler": "$@angular/compiler",
+			"@angular/core": "$@angular/core",
+			"@angular/forms": "$@angular/forms",
+			"@angular/platform-browser": "$@angular/platform-browser",
+			"@angular/platform-browser-dynamic": "$@angular/platform-browser-dynamic",
+			"@angular/router": "$@angular/router"
+		}
+		
+		const modifiedContentBytes = encoder.encode(JSON.stringify(packageJson, null, 2));
+		await vscode.workspace.fs.writeFile(packageJsonUri, modifiedContentBytes);
+	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		return Promise.reject(`Falha ao configurar package.json: ${errorMessage}`);
+	}
+}
+
 async function configureAngularJson(projectPath: string): Promise<void> {
 	const decoder = new TextDecoder('utf-8');
 	const encoder = new TextEncoder();
@@ -201,20 +256,31 @@ async function configureAngularJson(projectPath: string): Promise<void> {
 		const angularJson = JSON.parse(decoder.decode(originalContentBytes));
 
 		const projectKey = Object.keys(angularJson.projects)[0];
-		if (!projectKey) { throw new Error('Chave do projeto não encontrada no angular.json'); }
+		if (!projectKey) {
+			throw new Error('Chave do projeto não encontrada no angular.json');
+		}		
 
-		const buildOptions = angularJson.projects[projectKey].architect.build.options;
-		angularJson.projects[projectKey].architect.build.builder = "@angular-devkit/build-angular:browser";
-		delete buildOptions.browser;
-		buildOptions.main = 'src/main.ts';
-		buildOptions.assets = ["src/assets/images/favicon.ico", "src/assets"];
-		buildOptions.styles = [
-			"node_modules/@totvs/po-theme/css/po-theme-default-variables.min.css",
-			"node_modules/@totvs/po-theme/css/po-theme-default.min.css",
-			"node_modules/@po-ui/style/css/po-theme-core.min.css",
-			"src/styles.css"
-		];
-		angularJson.projects[projectKey].architect.test.options.assets = buildOptions.assets;
+		angularJson.projects[projectKey].architect.build.options = {
+			outputPath: `dist/${projectKey}`,
+			index: "src/index.html",
+			browser: "src/main.ts",
+			tsConfig: "tsconfig.app.json",
+			assets: [
+				"src/assets/images/favicon.ico",
+				"src/assets"
+			],
+			styles: [
+				"node_modules/@totvs/po-theme/css/po-theme-default-variables.min.css",
+				"node_modules/@totvs/po-theme/css/po-theme-default.min.css",
+				"node_modules/@po-ui/style/css/po-theme-core.min.css",
+				"src/styles.css"
+			],
+			polyfills: [
+				"zone.js"
+			]
+		}
+		
+		angularJson.projects[projectKey].architect.build.builder = "@angular-devkit/build-angular:application";
 
 		const modifiedContentBytes = encoder.encode(JSON.stringify(angularJson, null, 2));
 		await vscode.workspace.fs.writeFile(angularJsonUri, modifiedContentBytes);
