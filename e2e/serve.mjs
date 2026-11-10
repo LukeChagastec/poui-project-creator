@@ -1,8 +1,14 @@
 import { spawn } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
-const appDir = process.env.E2E_APP_DIR;
-if (!appDir) {
-	console.error('E2E_APP_DIR não definido; o global-setup deve gerar o projeto antes.');
+// Mesmo diretório fixo usado pelo e2e/global-setup.ts (o globalSetup roda em
+// processo separado, então env vars não propagam até aqui).
+const appDir = path.join(os.tmpdir(), 'poui-e2e', 'poui-e2e-app');
+
+if (!fs.existsSync(path.join(appDir, 'package.json'))) {
+	console.error(`Projeto E2E não encontrado em ${appDir}; o global-setup deve gerá-lo antes.`);
 	process.exit(1);
 }
 

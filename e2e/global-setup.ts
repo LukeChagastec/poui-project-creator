@@ -5,6 +5,13 @@ import * as path from 'path';
 import { scaffold } from '../out/lib/scaffold';
 import type { ScaffoldDeps } from '../out/lib/scaffold';
 
+// Diretório fixo, conhecido também por `e2e/serve.mjs`. Não usamos `process.env`:
+// o globalSetup do Playwright roda em processo separado do webServer, então env vars
+// definidas aqui não propagam.
+const E2E_PARENT_DIR = path.join(os.tmpdir(), 'poui-e2e');
+const E2E_PROJECT_NAME = 'poui-e2e-app';
+const E2E_APP_DIR = path.join(E2E_PARENT_DIR, E2E_PROJECT_NAME);
+
 function runCommand(command: string, cwd: string): Promise<void> {
 	return new Promise((resolve, reject) => {
 		exec(command, { cwd, env: process.env }, (error, _stdout, stderr) => {
@@ -40,17 +47,18 @@ function makeNodeDeps(): ScaffoldDeps {
 }
 
 export default async function globalSetup(): Promise<void> {
-	const parentPath = fs.mkdtempSync(path.join(os.tmpdir(), 'poui-e2e-'));
-	const projectName = 'poui-e2e-app';
-	const projectPath = path.join(parentPath, projectName);
-	const extensionPath = process.cwd();
+	fs.rmSync(E2E_PARENT_DIR, { recursive: true, force: true });
+	fs.mkdirSync(E2E_PARENT_DIR, { recursive: true });
 
-	await scaffold({ projectName, parentPath, projectPath, extensionPath, deps: makeNodeDeps() });
+	await scaffold({
+		projectName: E2E_PROJECT_NAME,
+		parentPath: E2E_PARENT_DIR,
+		projectPath: E2E_APP_DIR,
+		extensionPath: process.cwd(),
+		deps: makeNodeDeps(),
+	});
 
 	// Instala e builda o projeto gerado; qualquer falha derruba a suíte.
-	await runCommand('npm install --force', projectPath);
-	await runCommand('npx ng build', projectPath);
-
-	// O webServer (serve.mjs) herda esta variável de ambiente.
-	process.env.E2E_APP_DIR = projectPath;
+	await runCommand('npm install --force', E2E_APP_DIR);
+	await runCommand('npx ng build', E2E_APP_DIR);
 }
