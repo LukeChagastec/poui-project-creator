@@ -1,0 +1,11 @@
+{
+  "all": true,
+  "include": ["out/lib/**"],
+  "reporter": ["text", "lcov"],
+  "reports-dir": "coverage",
+  "check-coverage": true,
+  "lines": 80,
+  "functions": 80,
+  "branches": 80,
+  "statements": 80
+}
