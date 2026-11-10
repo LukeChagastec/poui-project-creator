@@ -17,13 +17,22 @@ describe('buildSteps', () => {
 	it('omite git init quando já é repositório', () => {
 		const steps = buildSteps('app', '/pai', '/pai/app', true);
 		assert.ok(!steps.some((s) => s.command === 'git init'));
-		assert.strictEqual(steps[1].command, 'ng add @po-ui/ng-components --skip-confirmation --sidemenu');
+		assert.strictEqual(steps[1].command, 'npx -p @angular/cli@21 ng add @po-ui/ng-components --skip-confirmation --sidemenu');
 	});
 
 	it('termina nos passos de geração do Angular (npm install é do scaffold)', () => {
 		const steps = buildSteps('app', '/pai', '/pai/app', false);
 		const last = steps[steps.length - 1];
-		assert.strictEqual(last.command, 'ng generate service services/lib-core-dev-interceptor');
+		assert.strictEqual(last.command, 'npx -p @angular/cli@21 ng generate service services/lib-core-dev-interceptor');
+	});
+
+	it('usa npx para todos os comandos do Angular CLI (não exige ng global)', () => {
+		const steps = buildSteps('app', '/pai', '/pai/app', false);
+		const ngCommands = steps.filter((s) => s.command.includes(' ng ') || s.command.startsWith('ng '));
+		for (const step of ngCommands) {
+			assert.ok(step.command.startsWith('npx -p @angular/cli@21 ng '), step.command);
+		}
+		assert.ok(ngCommands.length > 0);
 	});
 
 	it('numera os passos sequencialmente, sem lacunas', () => {
