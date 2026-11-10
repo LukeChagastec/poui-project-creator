@@ -4,3 +4,7 @@ node_modules
 .vscode-test/
 *.vsix
 ver.md
+.vscode/settings.json
+coverage/
+playwright-report/
+test-results/

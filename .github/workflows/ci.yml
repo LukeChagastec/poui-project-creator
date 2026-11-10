@@ -1,0 +1,116 @@
+# CI da extensão poui-project-creator.
+#
+# Regras (mantenha ao editar este arquivo):
+# - Branch padrão é `Master` (M maiúsculo). `main`/`master` nunca disparam.
+# - Runner ubuntu-latest, Node 22, cache npm.
+# - Jobs: guard-tdd (só PR) -> test -> e2e -> package -> publish (só tag v*).
+# - Integração roda com xvfb-run; Playwright roda headless.
+# - Roda também em PR draft: abra PRs como draft.
+# - package confere que src/templates/ está no .vsix; se faltar, ajuste `files`
+#   no package.json ou o .vscodeignore.
+# - publish exige tag igual a `v<version>` do package.json e usa o segredo VSCE_PAT.
+#   Nunca publique em push/PR.
+# - Branch protection em Master: exigir guard-tdd, test e e2e verdes.
+# - Não rode compile/lint à parte antes do `npm test`: o pretest já executa.
+
+name: CI
+
+on:
+  push:
+    branches: [Master]
+    tags: ['v*']
+  pull_request:
+    branches: [Master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guard-tdd:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Exige teste junto com código
+        run: |
+          BASE="origin/${{ github.base_ref }}"
+          CHANGED=$(git diff --name-only "$BASE"...HEAD)
+          SRC=$(echo "$CHANGED" | grep -E '^src/' | grep -vE '^src/test/' || true)
+          TESTS=$(echo "$CHANGED" | grep -E '^(src/test/|e2e/)' || true)
+          if [ -n "$SRC" ] && [ -z "$TESTS" ]; then
+            echo "::error::Mudanças em src/ sem testes (TDD obrigatório)."; exit 1
+          fi
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/cache@v4
+        with:
+          path: .vscode-test
+          key: vscode-test-${{ hashFiles('package-lock.json') }}
+      - run: npm ci
+      - run: npm run compile
+      - run: npm run test:unit        # c8 falha abaixo de 80% em src/lib/
+      - run: xvfb-run -a npm test
+      - run: npm run test:regression
+
+  e2e:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run compile
+      - id: pw
+        run: echo "v=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-${{ steps.pw.outputs.v }}
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+
+  package:
+    needs: [test, e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx @vscode/vsce ls | grep -q 'src/templates/'
+      - run: npx @vscode/vsce package
+      - uses: actions/upload-artifact@v4
+        with: { name: vsix, path: '*.vsix' }
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Tag deve bater com a versão
+        run: test "v$(node -p "require('./package.json').version")" = "${GITHUB_REF_NAME}"
+      - run: npx @vscode/vsce publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
