@@ -18,9 +18,9 @@ Valida o produto real: o projeto que a extensão gera. Não automatiza a UI do V
 
 Fluxo:
 
-1. `e2e/global-setup.ts` chama `out/lib/scaffold.js` (sem `vscode`, modo não interativo) para gerar o projeto em diretório temporário.
-2. Roda `npm ci` (ou `npm install` se o gerado não tiver lockfile) e `ng build` no projeto gerado; qualquer falha derruba a suíte.
-3. `playwright.config.ts` sobe o app via `webServer` (`ng serve --port 4200`, `reuseExistingServer: !process.env.CI`).
+1. `playwright.config.ts` usa `webServer` com `command: 'node e2e/serve.mjs'`. O Playwright sobe o `webServer` **antes** do `globalSetup`, então a geração acontece dentro do próprio `serve.mjs` (não em `global-setup.ts`).
+2. `e2e/serve.mjs` chama `out/lib/scaffold.js` (sem `vscode`, modo não interativo) para gerar o projeto em diretório fixo (`os.tmpdir()/poui-e2e/poui-e2e-app`), roda `npm install --force` e `ng build`; qualquer falha derruba a suíte.
+3. Em seguida sobe `ng serve --port 4200` e o Playwright aguarda a `url` (`webServer.timeout` de 20 min, cobrindo a geração).
 4. Specs rodam em Chromium.
 
 Cobertura mínima:

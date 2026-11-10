@@ -12,7 +12,7 @@ Mudou comando, estrutura ou regra? Atualize este arquivo no mesmo PR. Instruçã
 | `src/lib/` | Lógica pura ou com I/O injetado: `versions.ts`, `configurePackageJson`, `configureAngularJson`, `templateMap`, `scaffold` |
 | `src/templates/*.ts.template` | Arquivos injetados no projeto gerado (distribuídos como fonte) |
 | `src/test/unit/` · `integration/` · `regression/` | Testes da extensão (`*.test.ts`) |
-| `e2e/` | Playwright (`*.spec.ts`), `tsconfig.json` próprio, `global-setup.ts` |
+| `e2e/` | Playwright (`*.spec.ts`), `tsconfig.json` próprio, `serve.mjs` (gera e serve o app no webServer) |
 | `.github/workflows/ci.yml` | CI (regras nos comentários do topo) |
 | `docs/testes.md` | Convenções de teste, E2E e regressão |
 | `docs/atualizar-versoes.md` | Runbook para atualizar PO UI, Angular e `protheus-lib-core` |

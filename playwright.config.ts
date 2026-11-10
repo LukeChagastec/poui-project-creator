@@ -2,7 +2,6 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
 	testDir: './e2e',
-	globalSetup: './e2e/global-setup.ts',
 	fullyParallel: false,
 	workers: 1,
 	forbidOnly: !!process.env.CI,
@@ -16,9 +15,12 @@ export default defineConfig({
 	},
 	projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 	webServer: {
+		// O comando gera o projeto (scaffold + install + build) e então sobe o `ng serve`.
+		// O Playwright inicia o webServer ANTES do globalSetup, então a geração precisa
+		// ficar aqui. O timeout cobre o tempo de geração + build.
 		command: 'node e2e/serve.mjs',
 		url: 'http://localhost:4200',
 		reuseExistingServer: !process.env.CI,
-		timeout: 180_000,
+		timeout: 1_200_000,
 	},
 });
