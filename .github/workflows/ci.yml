@@ -12,6 +12,9 @@
 #   Nunca publique em push/PR.
 # - Branch protection em Master: exigir guard-tdd, test e e2e verdes.
 # - Não rode compile/lint à parte antes do `npm test`: o pretest já executa.
+# - O job e2e atualiza o npm para v11: o `ng add` dispara um `npm install` no
+#   projeto gerado, e o npm 10 (Node 22) cai num bug do Arborist
+#   ("Cannot read properties of null (reading 'edgesOut')").
 
 name: CI
 
@@ -78,6 +81,8 @@ jobs:
           path: ~/.cache/ms-playwright
           key: pw-${{ steps.pw.outputs.v }}
       - run: npx playwright install --with-deps chromium
+      - name: Atualiza npm para v11 (evita bug do Arborist no `ng add`)
+        run: npm install -g npm@11
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()
