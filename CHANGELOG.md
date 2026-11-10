@@ -4,6 +4,20 @@ Todas as mudanças notáveis para a extensão "poui-project-creator" serão docu
 
 Consulte [Mantenha um Changelog](http://keepachangelog.com/) para recomendações sobre como estruturar este arquivo.
 
+## [Não lançado]
+
+### Adicionado
+- Infraestrutura de testes: unitários (Mocha + c8, 100% de cobertura em `src/lib/`), integração (Extension Host) e regressão (snapshots do projeto gerado), além de E2E com Playwright.
+- CI no GitHub Actions: `guard-tdd` → `test` → `e2e` → `package` → `publish` (publicação só por tag `v*`).
+
+### Alterado
+- Lógica de criação do projeto extraída de `extension.ts` para `src/lib/`, com I/O injetado (testável sem `vscode`).
+- Versões das dependências centralizadas em `src/lib/versions.ts`.
+- Passos do scaffold renumerados sequencialmente.
+
+### Removido
+- Dependência descontinuada `@totvs/po-theme` do projeto gerado (dependências, `angular.json` e passos).
+
 ## [0.0.16] - 2025-10-13
 
 ### Corrigido
