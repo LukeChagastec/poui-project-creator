@@ -6,7 +6,6 @@ import { RouterModule } from '@angular/router';
 import {
   PoMenuItem,
   PoMenuModule,
-  PoPageModule,
   PoToolbarModule,
 } from '@po-ui/ng-components';
 import { ProAppConfigService } from '@totvs/protheus-lib-core';
@@ -18,17 +17,16 @@ import { ProAppConfigService } from '@totvs/protheus-lib-core';
     CommonModule,
     PoToolbarModule,
     PoMenuModule,
-    PoPageModule,
     RouterModule
   ],
   templateUrl: './app.html',
   styleUrls: ['./app.css'],
 })
-export class AppComponent {
+export class App {
   readonly menus: Array<PoMenuItem> = [
     { label: 'Home', action: this.onClick.bind(this) },
   ];
- 
+
   constructor(
     private proAppConfigService: ProAppConfigService
   ) {

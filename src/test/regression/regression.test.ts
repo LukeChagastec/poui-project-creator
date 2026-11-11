@@ -18,7 +18,7 @@ describe('regressão do projeto gerado', () => {
 		const files = [...Object.keys(templateMap), ...fixedFiles].sort();
 		snapshot('generated-files', files);
 
-		assert.ok(files.includes('src/app/app.component.ts'));
+		assert.ok(files.includes('src/app/app.ts'));
 		assert.ok(files.includes('src/assets/data/appConfig.json'));
 	});
 

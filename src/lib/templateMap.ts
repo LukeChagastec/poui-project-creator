@@ -7,7 +7,7 @@ export const templateMap: Record<string, string> = {
 	'src/environments/environment.ts': 'env-prod.ts.template',
 	'src/app/app.config.ts': 'app-config-ts.ts.template',
 	'src/app/services/lib-core-dev-interceptor.service.ts': 'interceptor.ts.template',
-	'src/app/app.component.ts': 'app-component-ts.ts.template',
+	'src/app/app.ts': 'app.ts.template',
 	'src/app/app.html': 'app.html.template',
 	'src/app/modules/lib-core-dev/lib-core-dev.module.ts': 'lib-core-dev-module.ts.template',
 };

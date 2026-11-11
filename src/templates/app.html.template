@@ -1,5 +1,3 @@
 <po-toolbar p-title="Meu Projeto"></po-toolbar>
 <po-menu [p-menus]="menus"></po-menu>
-<po-page p-title="Início">
-  <router-outlet></router-outlet>
-</po-page>
+<router-outlet></router-outlet>

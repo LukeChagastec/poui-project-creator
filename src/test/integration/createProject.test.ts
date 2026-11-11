@@ -74,7 +74,7 @@ describe('comando poui-project-creator.createProject', () => {
 
 		const projectDir = path.join(parentDir, 'meu-projeto');
 		assert.ok(fs.existsSync(path.join(projectDir, 'src', 'assets', 'data', 'appConfig.json')), 'appConfig.json criado');
-		assert.ok(fs.existsSync(path.join(projectDir, 'src', 'app', 'app.component.ts')), 'template app.component.ts criado');
+		assert.ok(fs.existsSync(path.join(projectDir, 'src', 'app', 'app.ts')), 'template app.ts criado');
 		assert.ok(fs.existsSync(path.join(projectDir, 'src', 'app', 'app-initializer.ts')), 'template app-initializer.ts criado');
 		assert.ok(fs.existsSync(path.join(projectDir, 'src', 'assets', 'images', 'favicon.ico')), 'favicon movido');
 

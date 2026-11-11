@@ -4,7 +4,7 @@ import { templateMap } from '../../lib/templateMap';
 describe('templateMap', () => {
 	it('mapeia os 9 arquivos do projeto gerado', () => {
 		assert.strictEqual(Object.keys(templateMap).length, 9);
-		assert.strictEqual(templateMap['src/app/app.component.ts'], 'app-component-ts.ts.template');
+		assert.strictEqual(templateMap['src/app/app.ts'], 'app.ts.template');
 		assert.strictEqual(templateMap['src/app/app.html'], 'app.html.template');
 		assert.strictEqual(templateMap['src/app/app.config.ts'], 'app-config-ts.ts.template');
 		assert.strictEqual(templateMap['src/app/app-initializer.ts'], 'app-initializer.ts.template');
