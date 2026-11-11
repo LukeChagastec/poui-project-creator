@@ -13,7 +13,7 @@
               "src/assets"
             ],
             "styles": [
-              "node_modules/@po-ui/style/css/po-theme-core.min.css",
+              "node_modules/@po-ui/style/css/po-theme-default.min.css",
               "src/styles.css"
             ],
             "polyfills": [

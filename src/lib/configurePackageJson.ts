@@ -13,7 +13,7 @@ export interface PackageJson {
 // cópia com dependencies/devDependencies/overrides ajustados a partir de versions.ts.
 // Não muta a entrada.
 //
-// Ex.: configurePackageJson({ name: 'meu-app' }).dependencies['@angular/core'] === '~21.0.3'
+// Ex.: configurePackageJson({ name: 'meu-app' }).dependencies['@angular/core'] === '~21.2.26'
 export function configurePackageJson(packageJson: PackageJson): PackageJson {
 	const result = structuredClone(packageJson);
 

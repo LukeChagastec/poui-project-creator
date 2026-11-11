@@ -43,7 +43,7 @@ export function configureAngularJson(angularJson: AngularJson): AngularJson {
 		browser: 'src/main.ts',
 		tsConfig: 'tsconfig.app.json',
 		assets: ['src/assets/images/favicon.ico', 'src/assets'],
-		styles: ['node_modules/@po-ui/style/css/po-theme-core.min.css', 'src/styles.css'],
+		styles: ['node_modules/@po-ui/style/css/po-theme-default.min.css', 'src/styles.css'],
 		polyfills: ['zone.js'],
 	};
 	build.builder = '@angular-devkit/build-angular:application';

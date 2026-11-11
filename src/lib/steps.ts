@@ -34,7 +34,7 @@ export function buildSteps(projectName: string, parentPath: string, projectPath:
 	}
 
 	specs.push(
-		{ command: `${ANGULAR_CLI_NPX} add @po-ui/ng-components --skip-confirmation --sidemenu`, cwd: projectPath, label: 'Instalando componentes PO UI...' },
+		{ command: `${ANGULAR_CLI_NPX} add @po-ui/ng-components --skip-confirmation --configSideMenu`, cwd: projectPath, label: 'Instalando componentes PO UI...' },
 		{ command: `${ANGULAR_CLI_NPX} add @po-ui/ng-templates --skip-confirmation`, cwd: projectPath, label: 'Instalando templates PO UI...' },
 		{ command: 'npm i @totvs/protheus-lib-core --legacy-peer-deps', cwd: projectPath, label: 'Instalando Protheus Lib Core...' },
 		{ command: `${ANGULAR_CLI_NPX} generate environments`, cwd: projectPath, label: 'Gerando environments...' },
