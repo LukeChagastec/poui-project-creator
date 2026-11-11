@@ -49,6 +49,16 @@ describe('configureAngularJson', () => {
 		assert.strictEqual(build.options.outputPath, 'dist/x');
 	});
 
+	it('define o budget para comportar o bundle do PO UI', () => {
+		const result = configureAngularJson(fixture());
+		const build = result.projects?.['meu-app']?.architect?.build;
+		assert.ok(build);
+		assert.deepStrictEqual(build.configurations?.production?.budgets, [
+			{ type: 'initial', maximumWarning: '3mb', maximumError: '5mb' },
+			{ type: 'anyComponentStyle', maximumWarning: '6kb', maximumError: '10kb' },
+		]);
+	});
+
 	it('não muta a entrada', () => {
 		const input = fixture();
 		configureAngularJson(input);

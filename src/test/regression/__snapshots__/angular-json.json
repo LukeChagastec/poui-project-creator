@@ -20,7 +20,23 @@
               "zone.js"
             ]
           },
-          "builder": "@angular-devkit/build-angular:application"
+          "builder": "@angular-devkit/build-angular:application",
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "3mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
         }
       }
     }
