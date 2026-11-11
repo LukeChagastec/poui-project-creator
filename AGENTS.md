@@ -82,6 +82,7 @@ Detalhes, convenções, E2E e regressão: `docs/testes.md`.
 
 - Working tree limpa; `git checkout Master && git pull origin Master`; branch nova `<tipo>/<issue>` a partir da `Master` (`feat`, `fix`, `refactor`, `docs`, `chore`, `test`, `ci`). Nunca empilhe sobre outra branch; se depender de PR não mergeado, pare e avise.
 - **Versionamento só pela skill `powerversion` (obrigatório).** Stage, commit e mensagem passam pela skill, sempre informando a issue; não rode `git commit` à mão. A skill manda na forma do commit (mensagem, granularidade); este arquivo manda no quê e quando (TDD, checks antes do push). Se a skill bloquear o push, não contorne: avise o mantenedor para fazer o push. Conflito entre a skill e este arquivo que não se resolva por essa regra: pare e pergunte.
+- **Commits assinados (obrigatório).** A branch protegida exige assinatura verificada (GPG). Se o `gpg.format` global estiver `ssh`, sobrescreva no repo: `git config --local gpg.format openpgp`, `git config user.signingkey <chave GPG>` e `git config commit.gpgsign true`. Commits sem assinatura não entram no merge.
 - Um commit, uma intenção, revertível sozinho, sempre verde. Conventional Commits em português; `feat`/`fix` podem citar `Cobre: <teste/issue>`.
 - Antes de cada push: `npm run compile && npm run lint && npm run test:all` e `npx @vscode/vsce ls`.
 - Antes de abrir o PR: `git fetch origin && git merge origin/Master`, preservando o que a `Master` introduziu, e rode tudo de novo.
@@ -139,6 +140,7 @@ Autoverificação antes de cada commit:
 - Se um teste exigir `vscode` para validar regra de negócio, a lógica está no lugar errado: mova para `src/lib/`.
 - `apontamento_prd/` é rascunho não versionado. Ignore-o; nunca inclua no CI, nos testes ou no `.vsix`.
 - `playwright-report/`, `test-results/`, `coverage/` e `.vscode-test/` ficam no `.gitignore`.
+- Reassinar commits já enviados: `git rebase --exec 'git commit --amend --no-edit -S' <base>` + `git push --force`. O `.vscode/settings.json` (reescrito pela extensão TOTVS) trava o rebase; rode `git update-index --skip-worktree .vscode/settings.json` antes.
 
 ## Templates do projeto gerado
 
