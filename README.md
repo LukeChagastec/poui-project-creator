@@ -1,6 +1,6 @@
 # PO UI Project Creator
 
-![Versão](https://img.shields.io/badge/version-0.0.19-red)
+![Versão](https://img.shields.io/badge/version-0.1.0-red)
 ![Licença](https://img.shields.io/badge/license-MIT-green)
 ![Plataforma](https://img.shields.io/badge/platform-VSCode-blueviolet)
 
@@ -9,7 +9,7 @@ Uma extensão para o Visual Studio Code que automatiza a criação de novos proj
 ## Funcionalidades Principais ✨
 
 * **Criação com um Comando:** Gere um projeto completo e configurado a partir de um único comando na paleta do VS Code.
-* **Integração Protheus:** Instala e configura automaticamente as dependências essenciais como `@totvs/protheus-lib-core` e `@totvs/po-theme`.
+* **Integração Protheus:** Instala e configura automaticamente as dependências essenciais como `@totvs/protheus-lib-core`, `@po-ui/ng-components` e `@po-ui/ng-templates`.
 * **Estrutura Organizada:** Move os templates para arquivos externos, mantendo o código da extensão limpo e facilitando futuras atualizações.
 * **Inicialização Inteligente de Git:** A extensão verifica se a pasta de destino já é um repositório Git. O comando `git init` só é executado se necessário, evitando reinicializações acidentais.
 * **Fluxo de Trabalho Amigável:** Acompanhe todo o processo através de notificações de progresso e, ao final, abra o novo projeto em uma nova janela com apenas um clique.
@@ -31,11 +31,10 @@ O comando automatiza os seguintes passos para você:
 3.  Adiciona os componentes do **PO UI** (`@po-ui/ng-components`).
 4.  Adiciona os templates do **PO UI** (`@po-ui/ng-templates`).
 5.  Instala a **Protheus Lib Core** (`@totvs/protheus-lib-core`).
-6.  Instala o **tema do Protheus** (`@totvs/po-theme`).
-7.  Configura o `angular.json` com os estilos e assets necessários, incluindo o `favicon.ico`.
-8.  Cria arquivos essenciais para a integração, como `appConfig.json`, interceptors de desenvolvimento e módulos.
-9.  Instala todas as dependências do projeto com `npm install`.
-10. Ao final, **oferece para abrir o projeto recém-criado** em uma nova janela do VS Code.
+6.  Configura o `angular.json` com os estilos (tema PO UI via `@po-ui/style`) e assets necessários, incluindo o `favicon.ico`.
+7.  Cria arquivos essenciais para a integração, como `appConfig.json`, interceptors de desenvolvimento e módulos.
+8.  Instala todas as dependências do projeto com `npm install`.
+9.  Ao final, **oferece para abrir o projeto recém-criado** em uma nova janela do VS Code.
 
 ## Pré-requisitos
 
@@ -50,4 +49,5 @@ Este projeto é distribuído sob a licença **MIT**. Veja o arquivo `LICENSE` pa
 
 ## 📜 Histórico de Mudanças
 
+- [2026-11-10] **feat(deps)**: atualiza o stack do projeto gerado para PO UI 21.37.0, Angular 21.2.x e `@totvs/protheus-lib-core` 21.1.4 ([Ver Detalhes](./docs/changelogs/2026-11-10-feat-deps-poui-21.37.md))
 - [2026-02-03 10:55] **feat(core)**: atualiza o projeto para Angular 21 ([Ver Detalhes](./docs/changelogs/2026-02-03_1054-feat-core.md))

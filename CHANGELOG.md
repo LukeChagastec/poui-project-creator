@@ -4,19 +4,24 @@ Todas as mudanças notáveis para a extensão "poui-project-creator" serão docu
 
 Consulte [Mantenha um Changelog](http://keepachangelog.com/) para recomendações sobre como estruturar este arquivo.
 
-## [Não lançado]
+## [0.1.0] - 2026-11-10
 
 ### Adicionado
+- `@angular/cdk` ao projeto gerado (peer dependency de `@po-ui/ng-components`), incluindo entrada em `overrides`.
 - Infraestrutura de testes: unitários (Mocha + c8, 100% de cobertura em `src/lib/`), integração (Extension Host) e regressão (snapshots do projeto gerado), além de E2E com Playwright.
 - CI no GitHub Actions: `guard-tdd` → `test` → `e2e` → `package` → `publish` (publicação só por tag `v*`).
 
 ### Alterado
+- Stack do projeto gerado atualizado: PO UI (`@po-ui/ng-components`/`@po-ui/ng-templates`) para **21.37.0**, Angular para **~21.2.26** (framework) / **~21.2.29** (CLI/devkit) e `@totvs/protheus-lib-core` para **^21.1.4**.
+- `rxjs` para `~7.8.1` e `tslib` para `^2.6.2`, alinhados ao exigido pelo PO UI 21.
+- Tema do `angular.json`: `po-theme-core.min.css` → `po-theme-default.min.css` (equivalente oficial do `@totvs/po-theme` no `@po-ui/style`).
+- Flag do `ng add @po-ui/ng-components`: `--sidemenu` → `--configSideMenu` (nome real no schema do schematic).
 - Lógica de criação do projeto extraída de `extension.ts` para `src/lib/`, com I/O injetado (testável sem `vscode`).
 - Versões das dependências centralizadas em `src/lib/versions.ts`.
 - Passos do scaffold renumerados sequencialmente.
 
 ### Removido
-- Dependência descontinuada `@totvs/po-theme` do projeto gerado (dependências, `angular.json` e passos).
+- Dependência descontinuada `@totvs/po-theme` do projeto gerado (dependências, `angular.json` e passos) e suas referências remanescentes no `README.md`.
 
 ## [0.0.16] - 2025-10-13
 
