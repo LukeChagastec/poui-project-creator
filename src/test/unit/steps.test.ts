@@ -17,7 +17,7 @@ describe('buildSteps', () => {
 	it('omite git init quando já é repositório', () => {
 		const steps = buildSteps('app', '/pai', '/pai/app', true);
 		assert.ok(!steps.some((s) => s.command === 'git init'));
-		assert.strictEqual(steps[1].command, 'npx -p @angular/cli@21 ng add @po-ui/ng-components --skip-confirmation --sidemenu');
+		assert.strictEqual(steps[1].command, 'npx -p @angular/cli@21 ng add @po-ui/ng-components --skip-confirmation --configSideMenu');
 	});
 
 	it('termina nos passos de geração do Angular (npm install é do scaffold)', () => {

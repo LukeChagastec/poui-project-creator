@@ -60,7 +60,7 @@ describe('scaffold', () => {
 		assert.strictEqual(angularJson.projects.app.architect.build.builder, '@angular-devkit/build-angular:application');
 
 		const packageJson = JSON.parse(rec.files.get('/pai/app/package.json')!);
-		assert.strictEqual(packageJson.dependencies['@angular/core'], '~21.0.3');
+		assert.strictEqual(packageJson.dependencies['@angular/core'], '~21.2.26');
 	});
 
 	it('escreve os templates crus, sem substituição', async () => {

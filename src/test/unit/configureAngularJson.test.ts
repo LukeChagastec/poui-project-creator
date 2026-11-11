@@ -28,7 +28,7 @@ describe('configureAngularJson', () => {
 
 		assert.ok(Array.isArray(build.options.styles));
 		const styles = build.options.styles as string[];
-		assert.ok(styles.includes('node_modules/@po-ui/style/css/po-theme-core.min.css'));
+		assert.ok(styles.includes('node_modules/@po-ui/style/css/po-theme-default.min.css'));
 		assert.ok(styles.includes('src/styles.css'));
 	});
 
