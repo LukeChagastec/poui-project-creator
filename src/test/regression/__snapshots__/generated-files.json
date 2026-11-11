@@ -1,0 +1,15 @@
+[
+  "angular.json",
+  "package.json",
+  "src/app/app-initializer.ts",
+  "src/app/app.config.ts",
+  "src/app/app.html",
+  "src/app/app.ts",
+  "src/app/modules/lib-core-dev/lib-core-dev.module.ts",
+  "src/app/services/lib-core-dev-interceptor.service.ts",
+  "src/assets/data/appConfig.json",
+  "src/assets/images/favicon.ico",
+  "src/environments/environment.development.ts",
+  "src/environments/environment.local.ts",
+  "src/environments/environment.ts"
+]
