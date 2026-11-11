@@ -6,5 +6,6 @@
   "app-config-ts.ts.template": "997deeaa4af9e97e787588e70fca506c793a9dfcccb9ca8b993a220594f0ebd4",
   "interceptor.ts.template": "9daad77ed14c213d11f1d542d72edd4c518fa3b260aea4dc070ee34df248674c",
   "app-component-ts.ts.template": "e1057ee90e93b7ef269b3e57296c11fd103cc546c58dcc7b892e7a405e4f76e9",
+  "app.html.template": "377ac92f0f51be3292f5d34bb8af1baac9a74d444b458f5744e113e90c59b0eb",
   "lib-core-dev-module.ts.template": "011628e23bacd86cefa71d5f6e829b2de0868d791117d906289cec6e15a35f88"
 }

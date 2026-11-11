@@ -2,9 +2,10 @@ import { strict as assert } from 'node:assert';
 import { templateMap } from '../../lib/templateMap';
 
 describe('templateMap', () => {
-	it('mapeia os 8 arquivos do projeto gerado', () => {
-		assert.strictEqual(Object.keys(templateMap).length, 8);
+	it('mapeia os 9 arquivos do projeto gerado', () => {
+		assert.strictEqual(Object.keys(templateMap).length, 9);
 		assert.strictEqual(templateMap['src/app/app.component.ts'], 'app-component-ts.ts.template');
+		assert.strictEqual(templateMap['src/app/app.html'], 'app.html.template');
 		assert.strictEqual(templateMap['src/app/app.config.ts'], 'app-config-ts.ts.template');
 		assert.strictEqual(templateMap['src/app/app-initializer.ts'], 'app-initializer.ts.template');
 		assert.strictEqual(templateMap['src/environments/environment.ts'], 'env-prod.ts.template');
@@ -18,9 +19,9 @@ describe('templateMap', () => {
 		}
 	});
 
-	it('todo template termina em .ts.template', () => {
+	it('todo template termina em .template', () => {
 		for (const tpl of Object.values(templateMap)) {
-			assert.ok(tpl.endsWith('.ts.template'), `extensão inesperada: ${tpl}`);
+			assert.ok(tpl.endsWith('.template'), `extensão inesperada: ${tpl}`);
 		}
 	});
 });

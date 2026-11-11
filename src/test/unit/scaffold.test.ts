@@ -71,7 +71,7 @@ describe('scaffold', () => {
 			rec.files.get('/pai/app/src/app/app-initializer.ts'),
 			'conteúdo de /ext/src/templates/app-initializer.ts.template',
 		);
-		assert.strictEqual(Object.keys(templateDestinations(rec)).length, 8);
+		assert.strictEqual(Object.keys(templateDestinations(rec)).length, 9);
 	});
 
 	it('cria os diretórios de assets', async () => {
